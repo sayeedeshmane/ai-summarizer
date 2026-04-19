@@ -39,9 +39,14 @@
         });
 
         const result = await response.json();
-        outDiv.innerHTML = "<strong>Summary:</strong><br>" + result[0].summary_text;
+
+        if (result.isError) {
+            outDiv.innerHTML = "⚠️ " + result.message;
+        } else {
+            outDiv.innerHTML = "<strong>Summary:</strong><br>" + result.summary;
+        }
     } catch (err) {
-        outDiv.innerHTML = "❌ Error: " + err.message;
+        outDiv.innerHTML = "❌ Connection Error: " + err.message;
     } finally {
         btn.disabled = false;
     }
