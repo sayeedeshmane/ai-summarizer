@@ -3,8 +3,11 @@ export default async function handler(req, res) {
 
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-    
-    const hfResponse = await fetch("https://api-inference.huggingface.co/models/facebook/bart-large-cnn", {
+
+    // DOUBLE CHECK THIS URL
+    const API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+
+    const hfResponse = await fetch(API_URL, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${process.env.HF_TOKEN}`,
@@ -15,7 +18,7 @@ export default async function handler(req, res) {
         options: { wait_for_model: true } 
       })
     });
-
+    
     // CHECK IF THE RESPONSE IS ACTUALLY JSON
     const contentType = hfResponse.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
