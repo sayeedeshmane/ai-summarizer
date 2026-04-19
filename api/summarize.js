@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
 
     // DOUBLE CHECK THIS URL
-    const API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+    const API_URL = "https://router.huggingface.co/hf-inference/models/facebook/bart-large-cnn";
 
     const hfResponse = await fetch(API_URL, {
       method: "POST",
