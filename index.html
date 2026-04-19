@@ -23,59 +23,29 @@
 </div>
 
 <script>
-    // 1. YOUR API SETTINGS
-    const API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
-    const HF_TOKEN = "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"; 
+   async function runAI() {
+    const text = document.getElementById('textInput').value;
+    const outDiv = document.getElementById('output');
+    const btn = document.getElementById('btn');
 
-    async function runAI() {
-        const text = document.getElementById('textInput').value;
-        const outDiv = document.getElementById('output');
-        const btn = document.getElementById('btn');
+    outDiv.style.display = "block";
+    outDiv.innerHTML = "⏳ Cloud is thinking...";
+    btn.disabled = true;
 
-        if (!text || text.length < 15) {
-            alert("Please paste at least one full sentence.");
-            return;
-        }
+    try {
+        const response = await fetch("/api/summarize", {
+            method: "POST",
+            body: JSON.stringify({ text: text })
+        });
 
-        // UI Feedback
-        outDiv.style.display = "block";
-        outDiv.innerHTML = "⏳ Cloud is thinking... (Please wait 30-60 seconds for the first run)";
-        btn.disabled = true;
-
-        try {
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${HF_TOKEN}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    inputs: text,
-                    options: { wait_for_model: true }
-                })
-            });
-
-            const result = await response.json();
-
-            // Check if the cloud returned an error (like model loading)
-            if (!response.ok) {
-                throw new Error(result.error || "Cloud API Error");
-            }
-
-            // Successfully received summary
-            if (result && result[0] && result[0].summary_text) {
-                outDiv.innerHTML = "<strong>Summary:</strong><br>" + result[0].summary_text;
-            } else {
-                outDiv.innerHTML = "Cloud returned an empty response. Try slightly longer text.";
-            }
-
-        } catch (err) {
-            console.error("Error:", err);
-            outDiv.innerHTML = "❌ Error: " + err.message;
-        } finally {
-            btn.disabled = false;
-        }
+        const result = await response.json();
+        outDiv.innerHTML = "<strong>Summary:</strong><br>" + result[0].summary_text;
+    } catch (err) {
+        outDiv.innerHTML = "❌ Error: " + err.message;
+    } finally {
+        btn.disabled = false;
     }
+}
 </script>
 
 </body>
