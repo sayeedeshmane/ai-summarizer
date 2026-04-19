@@ -26,11 +26,8 @@
    async function runAI() {
     const text = document.getElementById('textInput').value;
     const outDiv = document.getElementById('output');
-    const btn = document.getElementById('btn');
-
     outDiv.style.display = "block";
-    outDiv.innerHTML = "⏳ Cloud is thinking...";
-    btn.disabled = true;
+    outDiv.innerHTML = "⏳ Connecting to Cloud...";
 
     try {
         const response = await fetch("/api/summarize", {
@@ -38,17 +35,22 @@
             body: JSON.stringify({ text: text })
         });
 
-        const result = await response.json();
+        // SAFETY: Check if we got HTML instead of JSON
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            const rawText = await response.text();
+            console.error("Received HTML instead of JSON:", rawText);
+            throw new Error("Server sent back a webpage instead of data. Check Vercel logs.");
+        }
 
+        const result = await response.json();
         if (result.isError) {
             outDiv.innerHTML = "⚠️ " + result.message;
         } else {
             outDiv.innerHTML = "<strong>Summary:</strong><br>" + result.summary;
         }
     } catch (err) {
-        outDiv.innerHTML = "❌ Connection Error: " + err.message;
-    } finally {
-        btn.disabled = false;
+        outDiv.innerHTML = "❌ Error: " + err.message;
     }
 }
 </script>
