@@ -56,17 +56,18 @@
         resultText.innerHTML = "";
 
         try {
-            const response = await fetch("https://api-inference.huggingface.co/models/facebook/bart-large-cnn", {
-                headers: { 
-                    "Authorization": "Bearer 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",
-                    "Content-Type": "application/json"
-                },
-                method: "POST",
-                body: JSON.stringify({ 
-                    inputs: text,
-                    options: { wait_for_model: true } 
-                }),
-            });
+            // NEW FETCH URL WITH PROXY
+const response = await fetch("https://corsproxy.io/?" + encodeURIComponent("https://api-inference.huggingface.co/models/facebook/bart-large-cnn"), {
+    headers: { 
+        "Authorization": "Bearer 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", 
+        "Content-Type": "application/json"
+    },
+    method: "POST",
+    body: JSON.stringify({ 
+        inputs: text,
+        options: { wait_for_model: true } 
+    }),
+});
 
             const result = await response.json();
 
